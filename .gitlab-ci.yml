@@ -1,0 +1,65 @@
+image: openjdk:8-jdk
+
+variables:
+  ANDROID_COMPILE_SDK: "28"
+  ANDROID_BUILD_TOOLS: "28.0.3"
+  ANDROID_SDK_TOOLS:   "4333796"
+
+#cache:
+#  key: flutter_sdk_cache
+#  paths:
+#    - .gradle/wrapper
+#    - .gradle/caches
+
+
+
+before_script:
+  # android
+  - apt-get --quiet update --yes
+  - apt-get --quiet install --yes wget tar unzip lib32stdc++6 lib32z1
+  - wget --quiet --output-document=android-sdk.zip https://dl.google.com/android/repository/sdk-tools-linux-${ANDROID_SDK_TOOLS}.zip
+  - unzip -d android-sdk-linux android-sdk.zip
+  - echo y | android-sdk-linux/tools/bin/sdkmanager "platforms;android-${ANDROID_COMPILE_SDK}" >/dev/null
+  - echo y | android-sdk-linux/tools/bin/sdkmanager "platform-tools" >/dev/null
+  - echo y | android-sdk-linux/tools/bin/sdkmanager "build-tools;${ANDROID_BUILD_TOOLS}" >/dev/null
+  - export ANDROID_HOME=$PWD/android-sdk-linux
+  - export PATH=$PATH:$PWD/android-sdk-linux/platform-tools/
+
+  # 暂时禁用检查错误，并使用yes接受所有许可证
+  - set +o pipefail
+  - yes | android-sdk-linux/tools/bin/sdkmanager --licenses
+  - set -o pipefail
+
+
+  # flutter
+  - wget --output-document=flutter-sdk.tar.xz https://storage.googleapis.com/flutter_infra/releases/stable/linux/flutter_linux_v1.7.8+hotfix.4-stable.tar.xz
+  - tar -xf flutter-sdk.tar.xz
+  - export PATH=$PATH:$PWD/flutter/bin
+  - export PUB_HOSTED_URL=https://pub.flutter-io.cn
+  - export FLUTTER_STORAGE_BASE_URL=https://storage.flutter-io.cn
+  - echo flutter.sdk=$PWD/flutter > android/local.properties
+  - cd android
+  - rm -rf android/.gradle
+
+stages:
+  - android-build
+
+
+assembleRelease:
+  stage: android-build
+  #  tags:
+  #    - build
+  only:
+    - dev
+  script:
+    - cd ..
+    #    - flutter doctor
+    #    - ifconfig
+    - flutter packages get
+    - flutter build apk --target-platform android-arm --split-per-abi
+    - mv build/app/outputs/apk/release/app-armeabi-v7a-release.apk build
+    - ls
+  #    - curl http://127.0.0.1:8080/file/upload -F "file=@/build/app/outputs/apk/release/app-release.apk"
+  artifacts:
+    paths:
+      - build/app-armeabi-v7a-release.apk

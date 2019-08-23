@@ -1,0 +1,39 @@
+{
+  "projectName": "dique",
+  "projectOwner": "FEMessage",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "commitConvention": "angular",
+  "contributors": [
+    {
+      "login": "asjqkkkk",
+      "name": "android bro",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/30992818?v=4",
+      "profile": "https://github.com/asjqkkkk",
+      "contributions": [
+        "code",
+        "doc",
+        "design",
+        "infra"
+      ]
+    },
+    {
+      "login": "kira2015",
+      "name": "wu_zy",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/14231117?v=4",
+      "profile": "https://github.com/kira2015",
+      "contributions": [
+        "code",
+        "doc",
+        "content",
+        "infra"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7
+}
